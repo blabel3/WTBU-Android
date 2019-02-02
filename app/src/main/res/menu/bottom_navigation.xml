@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/schedule"
+        android:icon="@drawable/ic_calendar_black_24dp"
+        android:title="Schedule" />
+    <item
+        android:id="@+id/radio"
+        android:icon="@drawable/ic_radio_black_24dp"
+        android:title="Stream Now" />
+    <item
+        android:id="@+id/wtbu"
+        android:icon="@drawable/ic_world_black_24dp"
+        android:title="WTBU" />
+</menu>
