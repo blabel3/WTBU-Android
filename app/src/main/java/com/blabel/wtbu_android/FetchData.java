@@ -1,9 +1,9 @@
-package com.emission.abnc.wtbu_android;
+package com.blabel.wtbu_android;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.emission.abnc.wtbu_android.ui.streaming.ScheduleFragment;
+import com.blabel.wtbu_android.ui.streaming.ScheduleFragment;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;

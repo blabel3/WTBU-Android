@@ -1,4 +1,4 @@
-package com.emission.abnc.wtbu_android;
+package com.blabel.wtbu_android;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -15,9 +15,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.emission.abnc.wtbu_android.ui.streaming.ScheduleFragment;
-import com.emission.abnc.wtbu_android.ui.streaming.StreamingFragment;
-import com.emission.abnc.wtbu_android.ui.streaming.WTBUFragment;
+import com.blabel.wtbu_android.ui.streaming.ScheduleFragment;
+import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
+import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {

@@ -1,4 +1,4 @@
-package com.emission.abnc.wtbu_android.ui.streaming;
+package com.blabel.wtbu_android.ui.streaming;
 
 import androidx.lifecycle.ViewModel;
 

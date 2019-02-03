@@ -1,4 +1,4 @@
-package com.emission.abnc.wtbu_android.ui.streaming;
+package com.blabel.wtbu_android.ui.streaming;
 
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProviders;
@@ -21,9 +21,9 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.emission.abnc.wtbu_android.ArchiveRecyclerAdapter;
-import com.emission.abnc.wtbu_android.FetchData;
-import com.emission.abnc.wtbu_android.R;
+import com.blabel.wtbu_android.ArchiveRecyclerAdapter;
+import com.blabel.wtbu_android.FetchData;
+import com.blabel.wtbu_android.R;
 import com.google.android.material.tabs.TabLayout;
 
 import org.jsoup.Jsoup;
@@ -70,10 +70,12 @@ public class ScheduleFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ArchiveRecyclerAdapter(dayOfTheWeekData);
+        mAdapter = new ArchiveRecyclerAdapter(getContext(), dayOfTheWeekData);
         mRecycler.setAdapter(mAdapter);
 
         mAdapter.notifyDataSetChanged();
+
+        Date d = new Date();
 
         Log.d("WTBU-A", "Got here");
 

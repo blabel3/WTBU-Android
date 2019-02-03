@@ -1,4 +1,4 @@
-package com.emission.abnc.wtbu_android.ui.streaming;
+package com.blabel.wtbu_android.ui.streaming;
 
 import androidx.lifecycle.ViewModelProviders;
 
@@ -17,7 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.emission.abnc.wtbu_android.R;
+import com.blabel.wtbu_android.R;
 import com.google.android.exoplayer2.DefaultLoadControl;
 import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
