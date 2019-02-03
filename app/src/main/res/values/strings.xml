@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">WTBU Android</string>
+    <string name="schedule_label">"Schedule"</string>
+    <string name="stream_label">"Stream Now"</string>
+    <string name="wtbu_label">"WTBU"</string>
+    <string name="theme_menu_label">Dark Theme</string>
+    <string name="about_menu_label">About</string>
 </resources>

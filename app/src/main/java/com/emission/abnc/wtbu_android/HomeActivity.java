@@ -8,21 +8,16 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import com.emission.abnc.wtbu_android.ui.streaming.ScheduleFragment;
 import com.emission.abnc.wtbu_android.ui.streaming.StreamingFragment;
 import com.emission.abnc.wtbu_android.ui.streaming.WTBUFragment;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.upstream.DataSource;
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
@@ -34,8 +29,24 @@ public class HomeActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
 
+    private static final String PREFS_NAME = "prefs";
+    private static final String PREF_DARK_THEME = "dark_theme";
+
+    private boolean darkThemeEnabled;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //Dark Theme
+        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        darkThemeEnabled = preferences.getBoolean(PREF_DARK_THEME, false);
+
+        Log.d("WTBU-A", ((Boolean) darkThemeEnabled).toString());
+
+        if(darkThemeEnabled){
+            setTheme(R.style.AppThemeDark);
+        }
+
+        //Create activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
@@ -84,14 +95,6 @@ public class HomeActivity extends AppCompatActivity {
                 }
         );
 
-
-
-        /*if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.container, StreamingFragment.newInstance())
-                    .commitNow();
-        }*/
-
     }
 
     public static class MyPagerAdapter extends FragmentPagerAdapter{
@@ -113,6 +116,38 @@ public class HomeActivity extends AppCompatActivity {
                 default: return WTBUFragment.newInstance();
                 //default: Log.e("WTBU-A", "Pager out of bounds");
             }
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+        menu.findItem(R.id.dark_theme_menu).setChecked(darkThemeEnabled);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.dark_theme_menu:
+                SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+                item.setChecked(!item.isChecked());
+                editor.putBoolean(PREF_DARK_THEME, item.isChecked());
+                editor.apply();
+                recreate();
+                return true;
+            case R.id.about_menu:
+                //showHelp();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 }

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/about_menu"
+        android:title="@string/about_menu_label" />
+    <item
+        android:id="@+id/dark_theme_menu"
+        android:checkable="true"
+        android:icon="@drawable/ic_moon_black_24dp"
+        android:title="@string/theme_menu_label" />
+</menu>
