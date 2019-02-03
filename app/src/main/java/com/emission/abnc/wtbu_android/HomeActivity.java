@@ -8,6 +8,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -15,6 +16,13 @@ import android.view.MenuItem;
 import com.emission.abnc.wtbu_android.ui.streaming.ScheduleFragment;
 import com.emission.abnc.wtbu_android.ui.streaming.StreamingFragment;
 import com.emission.abnc.wtbu_android.ui.streaming.WTBUFragment;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class HomeActivity extends AppCompatActivity {
@@ -75,6 +83,8 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
         );
+
+
 
         /*if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
