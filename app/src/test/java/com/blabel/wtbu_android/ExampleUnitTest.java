@@ -1,4 +1,4 @@
-package com.emission.abnc.wtbu_android;
+package com.blabel.wtbu_android;
 
 import org.junit.Test;
 

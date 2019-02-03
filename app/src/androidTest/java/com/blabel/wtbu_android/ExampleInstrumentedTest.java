@@ -1,4 +1,4 @@
-package com.emission.abnc.wtbu_android;
+package com.blabel.wtbu_android;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
 
-        assertEquals("com.emission.abnc.wtbu_android", appContext.getPackageName());
+        assertEquals("com.emission.wtbu_android", appContext.getPackageName());
     }
 }
