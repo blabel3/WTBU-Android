@@ -1,44 +1,24 @@
 package com.blabel.wtbu_android.ui.streaming;
 
-import androidx.cardview.widget.CardView;
-import androidx.lifecycle.ViewModelProviders;
-
-import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
-
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import com.blabel.wtbu_android.ArchiveRecyclerAdapter;
 import com.blabel.wtbu_android.FetchData;
 import com.blabel.wtbu_android.R;
 import com.google.android.material.tabs.TabLayout;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
-
-import java.io.IOException;
-import java.net.URI;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
-import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class ScheduleFragment extends Fragment {
 
@@ -76,8 +56,6 @@ public class ScheduleFragment extends Fragment {
         mAdapter.notifyDataSetChanged();
 
         Date d = new Date();
-
-        Log.d("WTBU-A", "Got here");
 
         tabs.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
