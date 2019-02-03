@@ -29,7 +29,7 @@ public class ScheduleFragment extends Fragment {
     private ScheduleViewModel mViewModel;
 
     private RecyclerView mRecycler;
-    private RecyclerView.Adapter mAdapter;
+    private ArchiveRecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
     public static ScheduleFragment newInstance() {
@@ -49,7 +49,7 @@ public class ScheduleFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(mLayoutManager);
 
-        String[] dataset = {"Test", "Test2", "Test3"};
+        final String[] dataset = {"Test", "Test2", "Test3"};
 
         mAdapter = new ArchiveRecyclerAdapter(dataset);
         mRecycler.setAdapter(mAdapter);
@@ -67,7 +67,7 @@ public class ScheduleFragment extends Fragment {
 
                     @Override
                     public void onTabUnselected(TabLayout.Tab tab) {
-
+                        mAdapter.clear();
                     }
 
                     @Override

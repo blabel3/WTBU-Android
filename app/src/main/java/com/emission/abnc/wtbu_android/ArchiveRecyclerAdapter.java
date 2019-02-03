@@ -66,18 +66,22 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
         holder.showName.setText(mDataset[position]);
-        Log.d("WTBU-A", "Replacing");
 
-
-        //replace the rest later
+        //TODO: replace the rest later
 
     }
 
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        Log.d("WTBU-A", "" + mDataset.length);
         return mDataset.length;
     }
+
+    public void clear() {
+        int size = mDataset.length;
+        mDataset = new String[0];
+        notifyItemRangeRemoved(0, size);
+    }
+
 
 }
