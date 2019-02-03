@@ -8,11 +8,15 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecyclerAdapter.MyViewHolder>{
-    private String[] mDataset;
+    private LinkedList<LinkedList<String>> mDataset;
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         //correspondes to the views on the cards we will be making
@@ -44,7 +48,7 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ArchiveRecyclerAdapter(String[] myDataset) {
+    public ArchiveRecyclerAdapter(LinkedList<LinkedList<String>> myDataset) {
         mDataset = myDataset;
     }
 
@@ -65,7 +69,33 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
     public void onBindViewHolder(MyViewHolder holder, int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        holder.showName.setText(mDataset[position]);
+        String data = mDataset.get(7).get(position);
+
+        String[] explode = data.split(" ");
+        ArrayList<String> kapow = new ArrayList<>(Arrays.asList(explode));
+
+        String[] links = new String[2];
+
+        int switcher = 0;
+
+        while(kapow.get(kapow.size() -1).startsWith("http://headphones.bu.edu")){
+            links[switcher] = kapow.remove(kapow.size() -1);
+
+            if(switcher == 0)
+                switcher = 1;
+            else
+                switcher = 0;
+
+        }
+
+        StringBuilder showname = new StringBuilder();
+
+        for(String s : kapow){
+            showname.append(s);
+            showname.append(" ");
+        }
+
+        holder.showName.setText(showname);
 
         //TODO: replace the rest later
 
@@ -74,12 +104,12 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
     // Return the size of your dataset (invoked by the layout manager)
     @Override
     public int getItemCount() {
-        return mDataset.length;
+        return mDataset.get(7).size();
     }
 
     public void clear() {
-        int size = mDataset.length;
-        mDataset = new String[0];
+        int size = mDataset.get(7).size();
+        mDataset.remove(7);
         notifyItemRangeRemoved(0, size);
     }
 

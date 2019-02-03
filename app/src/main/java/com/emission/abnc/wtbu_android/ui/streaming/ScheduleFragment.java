@@ -3,6 +3,7 @@ package com.emission.abnc.wtbu_android.ui.streaming;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,16 +22,34 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.emission.abnc.wtbu_android.ArchiveRecyclerAdapter;
+import com.emission.abnc.wtbu_android.FetchData;
 import com.emission.abnc.wtbu_android.R;
 import com.google.android.material.tabs.TabLayout;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.net.URI;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ScheduleFragment extends Fragment {
 
     private ScheduleViewModel mViewModel;
 
     private RecyclerView mRecycler;
-    private ArchiveRecyclerAdapter mAdapter;
+    public ArchiveRecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
+
+    public static LinkedList<LinkedList<String>> dayOfTheWeekData;
+
 
     public static ScheduleFragment newInstance() {
         return new ScheduleFragment();
@@ -41,6 +60,8 @@ public class ScheduleFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View self = inflater.inflate(R.layout.schedule_fragment, container, false);
 
+        dayOfTheWeekData = new LinkedList<>();
+
         TabLayout tabs = (TabLayout) self.findViewById(R.id.tabs);
         mRecycler = (RecyclerView) self.findViewById(R.id.archive_recycler);
 
@@ -49,9 +70,7 @@ public class ScheduleFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(mLayoutManager);
 
-        final String[] dataset = {"Test", "Test2", "Test3"};
-
-        mAdapter = new ArchiveRecyclerAdapter(dataset);
+        mAdapter = new ArchiveRecyclerAdapter(dayOfTheWeekData);
         mRecycler.setAdapter(mAdapter);
 
         mAdapter.notifyDataSetChanged();
@@ -62,12 +81,13 @@ public class ScheduleFragment extends Fragment {
                 new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
+                        mAdapter.clear();
+                        dayOfTheWeekData.add(dayOfTheWeekData.get(tab.getPosition()));
                         mAdapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onTabUnselected(TabLayout.Tab tab) {
-                        mAdapter.clear();
                     }
 
                     @Override
@@ -77,8 +97,13 @@ public class ScheduleFragment extends Fragment {
                 }
         );
 
+        //Refreshes data
+        new FetchData().execute();
+
         return self;
     }
+
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
