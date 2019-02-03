@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,10 +10,67 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <TextView
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="ScheduleFragment" />
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tabIndicatorColor="?attr/colorPrimary">
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/schedule_sun"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule_sun_label" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/schedule_mon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule_mon_label" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/schedule_tue"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule_tue_label" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/schedule_wed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/schedule_wed_label" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/schedule_thr"
+                android:text="@string/schedule_thr_label" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/schedule_fri"
+                android:text="@string/schedule_fri_label" />
+
+            <com.google.android.material.tabs.TabItem
+                android:id="@+id/schedule_sat"
+                android:text="@string/schedule_sat_label" />
+
+        </com.google.android.material.tabs.TabLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/archive_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tabs" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </FrameLayout>

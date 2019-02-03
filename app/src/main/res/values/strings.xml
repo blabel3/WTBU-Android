@@ -1,8 +1,19 @@
 <resources>
     <string name="app_name">WTBU Android</string>
-    <string name="schedule_label">"Schedule"</string>
-    <string name="stream_label">"Stream Now"</string>
-    <string name="wtbu_label">"WTBU"</string>
+    <string name="schedule_label">Schedule</string>
+    <string name="stream_label">Stream Now</string>
+    <string name="wtbu_label">WTBU</string>
     <string name="theme_menu_label">Dark Theme</string>
     <string name="about_menu_label">About</string>
+    <string name="schedule_sun_label">SUN</string>
+    <string name="schedule_mon_label">MON</string>
+    <string name="schedule_tue_label">TUE</string>
+    <string name="schedule_wed_label">WED</string>
+    <string name="schedule_thr_label">THR</string>
+    <string name="schedule_fri_label">FRI</string>
+    <string name="schedule_sat_label">SAT</string>
+    <string name="week_one_desc">Episode from one week ago</string>
+    <string name="older_week_label">Episode from two weeks ago</string>
+    <string name="show_name_textview">Show Name</string>
+    <string name="archive_control_desc">Archive Play/Pause</string>
 </resources>

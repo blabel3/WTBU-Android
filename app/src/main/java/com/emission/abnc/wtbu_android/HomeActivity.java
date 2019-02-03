@@ -40,7 +40,7 @@ public class HomeActivity extends AppCompatActivity {
         SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         darkThemeEnabled = preferences.getBoolean(PREF_DARK_THEME, false);
 
-        Log.d("WTBU-A", ((Boolean) darkThemeEnabled).toString());
+        Log.d("WTBU-A", "Dark theme enabled: " + ((Boolean) darkThemeEnabled).toString());
 
         if(darkThemeEnabled){
             setTheme(R.style.AppThemeDark);
