@@ -78,6 +78,7 @@ public class StreamingFragment extends Fragment {
         }*/
 
         playerView = view.findViewById(R.id.video_view);
+        playerView.setControllerShowTimeoutMs(0);
     }
 
     private void initializePlayer() {
@@ -90,7 +91,7 @@ public class StreamingFragment extends Fragment {
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
 
-        Uri uri = Uri.parse("http://headphones.bu.edu/Archives/WTBU-2019-01-31_0600_to_0800_The_Cafeteria.mp3");
+        Uri uri = Uri.parse("http://wtbu.bu.edu:1800/");
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource, true, false);
     }
