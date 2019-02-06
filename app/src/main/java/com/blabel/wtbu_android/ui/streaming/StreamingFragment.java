@@ -49,26 +49,6 @@ public class StreamingFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-        /*try {
-            String url = "https://sample-videos.com/audio/mp3/crowd-cheering.mp3"; // your URL here
-            MediaPlayer mediaPlayer = new MediaPlayer();
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-            mediaPlayer.setDataSource(url);
-            mediaPlayer.prepareAsync(); // might take long! (for buffering, etc)
-            mediaPlayer.setOnPreparedListener(
-                    new MediaPlayer.OnPreparedListener() {
-                        @Override
-                        public void onPrepared(MediaPlayer mediaPlayer) {
-                            mediaPlayer.start();
-                        }
-                    }
-            );
-
-        } catch(IOException noIO){
-            Log.v("WTBU-A", "Streaming IO Exception");
-        }*/
-
         playerView = view.findViewById(R.id.video_view);
         playerView.setControllerShowTimeoutMs(0);
     }

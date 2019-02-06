@@ -1,6 +1,8 @@
 package com.blabel.wtbu_android.ui.streaming;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,21 +18,24 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 public class ScheduleFragment extends Fragment {
 
     private ScheduleViewModel mViewModel;
 
-    private RecyclerView mRecycler;
-    public ArchiveRecyclerAdapter mAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private static final int NUM_PAGES = 7;
 
     private static ArrayList<LinkedList<Show>> archiveData;
     private LinkedList<Show> currentShows;
@@ -43,6 +48,15 @@ public class ScheduleFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        archiveData = new ArrayList<>(7);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+
         View self = inflater.inflate(R.layout.schedule_fragment, container, false);
 
         archiveData = new ArrayList<>(7);
@@ -72,7 +86,9 @@ public class ScheduleFragment extends Fragment {
         mAdapter = new ArchiveRecyclerAdapter(getContext(), currentShows);
         mRecycler.setAdapter(mAdapter);
 
-        mAdapter.notifyDataSetChanged();
+        viewPager = (ViewPager) self.findViewById(R.id.weekday_pager);
+        pagerAdapter = new WeekdayPagerAdapter(getFragmentManager());
+        viewPager.setAdapter(pagerAdapter);
 
 
 
@@ -86,9 +102,7 @@ public class ScheduleFragment extends Fragment {
                         mAdapter.notifyDataSetChanged();
                     }
 
-                    @Override
-                    public void onTabUnselected(TabLayout.Tab tab) {
-                    }
+        //Refreshes data */
 
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
@@ -112,6 +126,19 @@ public class ScheduleFragment extends Fragment {
 
 
 
+
+    public void updateArchiveData(ArrayList<LinkedList<Show>> result){
+        archiveData.clear();
+        archiveData.addAll(result);
+        //reload pages
+        for(int i = 0; i < NUM_PAGES; i++){
+            if(pagerAdapter.getRegisteredFragment(i)!=null){
+                pagerAdapter.destroyItem(viewPager, i, pagerAdapter.getRegisteredFragment(i));
+                pagerAdapter.instantiateItem(viewPager, i);
+            }
+        }
+        //set first load
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
