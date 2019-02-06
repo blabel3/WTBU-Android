@@ -37,9 +37,6 @@ public class ScheduleFragment extends Fragment {
 
     private static final int NUM_PAGES = 7;
 
-    private ViewPager viewPager;
-    private WeekdayPagerAdapter pagerAdapter;
-
     private static ArrayList<LinkedList<Show>> archiveData;
     private LinkedList<Show> currentShows;
 
@@ -62,86 +59,72 @@ public class ScheduleFragment extends Fragment {
 
         View self = inflater.inflate(R.layout.schedule_fragment, container, false);
 
-        currentShows = new LinkedList<>();
+        archiveData = new ArrayList<>(7);
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
 
         TabLayout tabs = (TabLayout) self.findViewById(R.id.tabs);
+
+        Date d = new Date();
+        Calendar c = new GregorianCalendar();
+        TabLayout.Tab currentDay = tabs.getTabAt(c.get(Calendar.DAY_OF_WEEK) - 1);
+
+        currentShows = archiveData.get(c.get(Calendar.DAY_OF_WEEK) - 1);
+
+        mRecycler = (RecyclerView) self.findViewById(R.id.archive_recycler);
+
+        mRecycler.setHasFixedSize(true);
+
+        mLayoutManager = new LinearLayoutManager(getContext());
+        mRecycler.setLayoutManager(mLayoutManager);
+
+        mAdapter = new ArchiveRecyclerAdapter(getContext(), currentShows);
+        mRecycler.setAdapter(mAdapter);
 
         viewPager = (ViewPager) self.findViewById(R.id.weekday_pager);
         pagerAdapter = new WeekdayPagerAdapter(getFragmentManager());
         viewPager.setAdapter(pagerAdapter);
 
 
-        /*Date d = new Date();
-        Calendar c = new GregorianCalendar();
-        TabLayout.Tab currentDay = tabs.getTabAt(c.get(Calendar.DAY_OF_WEEK) - 1);
-        //currentDay.select();
+
+
+        tabs.addOnTabSelectedListener(
+                new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+                        mAdapter.clear();
+                        currentShows.addAll(archiveData.get(tab.getPosition()));
+                        mAdapter.notifyDataSetChanged();
+                    }
 
         //Refreshes data */
 
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+
+                    }
+                }
+        );
+
+        //Refreshes data
         new FetchData(this).execute();
 
         return self;
     }
 
-    private class WeekdayPagerAdapter extends FragmentStatePagerAdapter {
-        private SparseArray<WeekdayFragment> registeredFragments = new SparseArray<WeekdayFragment>();
-
-        public WeekdayPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            Log.d("WTBU-A", "position " + position);
-            Log.d("WTBU-A", "size " + archiveData.size());
-            if(archiveData.get(position)!=null) {
-                return WeekdayFragment.newInstance(archiveData.get(position));
-            } else {
-                return WeekdayFragment.newInstance();
-            }
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            WeekdayFragment fragment = (WeekdayFragment) super.instantiateItem(container, position);
-            registeredFragments.put(position, fragment);
-            return fragment;
-        }
-
-        @Override
-        public void destroyItem(ViewGroup container, int position, Object object) {
-            registeredFragments.remove(position);
-            super.destroyItem(container, position, object);
-        }
-
-        public Fragment getRegisteredFragment(int position) {
-            return registeredFragments.get(position);
-        }
-
-        @Override
-        public int getCount() {
-            return NUM_PAGES;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            // CHANGE STARTS HERE
-
-            String tabTitle = "";
-
-            switch(position){
-                case 0: tabTitle = "SUN"; break;
-                case 1: tabTitle = "MON"; break;
-                case 2: tabTitle = "TUE"; break;
-                case 3: tabTitle = "WED"; break;
-                case 4: tabTitle = "THR"; break;
-                case 5: tabTitle = "FRI"; break;
-                case 6: tabTitle = "SAT"; break;
-            }
-            // CHANGE ENDS HERE
-            return tabTitle;
-        }
+    public void updateArchiveData(ArrayList<LinkedList<Show>> result){
+        archiveData.clear();
+        archiveData.addAll(result);
+        mAdapter.notifyDataSetChanged();
+        //set first load
     }
+
+
 
 
     public void updateArchiveData(ArrayList<LinkedList<Show>> result){

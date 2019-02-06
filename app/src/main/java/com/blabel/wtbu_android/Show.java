@@ -3,9 +3,7 @@ package com.blabel.wtbu_android;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Comparator;
-
-public class Show implements Comparable<Show>, Parcelable {
+public class Show implements Comparable<Show> {
 
     String name;
     String url1;
@@ -15,24 +13,8 @@ public class Show implements Comparable<Show>, Parcelable {
     //custom show image link?
     //air time?
 
-    public static final Parcelable.Creator<Show> CREATOR = new Parcelable.Creator<Show>() {
-        public Show createFromParcel(Parcel in) {
-            return new Show(in);
-        }
-
-        public Show[] newArray(int size) {
-            return new Show[size];
-        }
-    };
-
     public Show(){
 
-    }
-
-    public Show(Parcel in){
-        name = in.readString();
-        url1 = in.readString();
-        url2 = in.readString();
     }
 
     public Show(String name, String url1, String url2){
@@ -72,18 +54,6 @@ public class Show implements Comparable<Show>, Parcelable {
 
     public boolean isSameShow(Show s2){
         return getName().equals(s2.getName());
-    }
-
-    @Override
-    public int describeContents() {
-        return hashCode();
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.name);
-        dest.writeString(this.url1);
-        dest.writeString(this.url2);
     }
 
 }
