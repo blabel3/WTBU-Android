@@ -1,6 +1,7 @@
 package com.blabel.wtbu_android.ui.streaming;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,9 +51,17 @@ public class ScheduleFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        archiveData = new ArrayList<>(7);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+        archiveData.add(null);
+
         View self = inflater.inflate(R.layout.schedule_fragment, container, false);
 
-        archiveData = new ArrayList<>(7);
         currentShows = new LinkedList<>();
 
         TabLayout tabs = (TabLayout) self.findViewById(R.id.tabs);
@@ -83,8 +92,13 @@ public class ScheduleFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            //return WeekdayFragment.newInstance(archiveData.get(position));
-            return WeekdayFragment.newInstance();
+            Log.d("WTBU-A", "position " + position);
+            Log.d("WTBU-A", "size " + archiveData.size());
+            if(archiveData.get(position)!=null) {
+                return WeekdayFragment.newInstance(archiveData.get(position));
+            } else {
+                return WeekdayFragment.newInstance();
+            }
         }
 
         @Override
@@ -131,7 +145,8 @@ public class ScheduleFragment extends Fragment {
 
 
     public void updateArchiveData(ArrayList<LinkedList<Show>> result){
-        archiveData = result;
+        archiveData.clear();
+        archiveData.addAll(result);
         //reload pages
         for(int i = 0; i < NUM_PAGES; i++){
             if(pagerAdapter.getRegisteredFragment(i)!=null){

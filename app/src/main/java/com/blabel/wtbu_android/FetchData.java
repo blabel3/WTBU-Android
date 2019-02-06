@@ -77,14 +77,13 @@ public class FetchData extends AsyncTask<Void, Void, ArrayList<LinkedList<Show>>
                 String year = link.substring(29, 33);
 
                 int weekday = dayOfWeek(Integer.parseInt(day), Integer.parseInt(month), Integer.parseInt(year)); //sunday 0 through 6 saturday
-                Log.d("WTBU-A", "" + weekday);
 
                 String nameHTML = link.substring(link.indexOf("=", 25) + 1);
                 String url =  "http://headphones.bu.edu/Archives/" + link.substring(link.indexOf("=") +1, link.indexOf("&"));
 
                 Show radioShow = new Show(URLDecoder.decode(nameHTML, "UTF-8"), url, "");
 
-                Log.d("WTBU-A", radioShow.getName());
+                Log.d("WTBU-A", "" + weekday + " " + radioShow.getName());
 
                 archiveData.get(weekday).add(radioShow);
 

@@ -76,7 +76,7 @@ public class Show implements Comparable<Show>, Parcelable {
 
     @Override
     public int describeContents() {
-        return 0;
+        return hashCode();
     }
 
     @Override
