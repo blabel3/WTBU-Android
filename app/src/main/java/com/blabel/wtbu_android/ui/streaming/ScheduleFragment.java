@@ -35,7 +35,10 @@ public class ScheduleFragment extends Fragment {
 
     private ScheduleViewModel mViewModel;
 
-    private static final int NUM_PAGES = 7;
+    private RecyclerView mRecycler;
+    private ArchiveRecyclerAdapter mAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+
 
     private static ArrayList<LinkedList<Show>> archiveData;
     private LinkedList<Show> currentShows;
@@ -48,15 +51,6 @@ public class ScheduleFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        archiveData = new ArrayList<>(7);
-        archiveData.add(null);
-        archiveData.add(null);
-        archiveData.add(null);
-        archiveData.add(null);
-        archiveData.add(null);
-        archiveData.add(null);
-        archiveData.add(null);
-
         View self = inflater.inflate(R.layout.schedule_fragment, container, false);
 
         archiveData = new ArrayList<>(7);
@@ -86,12 +80,6 @@ public class ScheduleFragment extends Fragment {
         mAdapter = new ArchiveRecyclerAdapter(getContext(), currentShows);
         mRecycler.setAdapter(mAdapter);
 
-        viewPager = (ViewPager) self.findViewById(R.id.weekday_pager);
-        pagerAdapter = new WeekdayPagerAdapter(getFragmentManager());
-        viewPager.setAdapter(pagerAdapter);
-
-
-
 
         tabs.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
@@ -108,6 +96,11 @@ public class ScheduleFragment extends Fragment {
                     public void onTabReselected(TabLayout.Tab tab) {
 
                     }
+
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+                    }
+
                 }
         );
 
@@ -121,22 +114,6 @@ public class ScheduleFragment extends Fragment {
         archiveData.clear();
         archiveData.addAll(result);
         mAdapter.notifyDataSetChanged();
-        //set first load
-    }
-
-
-
-
-    public void updateArchiveData(ArrayList<LinkedList<Show>> result){
-        archiveData.clear();
-        archiveData.addAll(result);
-        //reload pages
-        for(int i = 0; i < NUM_PAGES; i++){
-            if(pagerAdapter.getRegisteredFragment(i)!=null){
-                pagerAdapter.destroyItem(viewPager, i, pagerAdapter.getRegisteredFragment(i));
-                pagerAdapter.instantiateItem(viewPager, i);
-            }
-        }
         //set first load
     }
 
