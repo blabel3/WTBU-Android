@@ -8,9 +8,13 @@ import android.view.ViewGroup;
 import com.blabel.wtbu_android.ArchiveRecyclerAdapter;
 import com.blabel.wtbu_android.FetchData;
 import com.blabel.wtbu_android.R;
+import com.blabel.wtbu_android.Show;
 import com.google.android.material.tabs.TabLayout;
 
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.LinkedList;
 
 import androidx.annotation.NonNull;
@@ -28,7 +32,8 @@ public class ScheduleFragment extends Fragment {
     public ArchiveRecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-    public static LinkedList<LinkedList<String>> dayOfTheWeekData;
+    private static ArrayList<LinkedList<Show>> archiveData;
+    private LinkedList<Show> currentShows;
 
 
     public static ScheduleFragment newInstance() {
@@ -40,9 +45,23 @@ public class ScheduleFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View self = inflater.inflate(R.layout.schedule_fragment, container, false);
 
-        dayOfTheWeekData = new LinkedList<>();
+        archiveData = new ArrayList<>(7);
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
+        archiveData.add(new LinkedList<Show>());
 
         TabLayout tabs = (TabLayout) self.findViewById(R.id.tabs);
+
+        Date d = new Date();
+        Calendar c = new GregorianCalendar();
+        TabLayout.Tab currentDay = tabs.getTabAt(c.get(Calendar.DAY_OF_WEEK) - 1);
+
+        currentShows = archiveData.get(c.get(Calendar.DAY_OF_WEEK) - 1);
+
         mRecycler = (RecyclerView) self.findViewById(R.id.archive_recycler);
 
         mRecycler.setHasFixedSize(true);
@@ -50,19 +69,20 @@ public class ScheduleFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ArchiveRecyclerAdapter(getContext(), dayOfTheWeekData);
+        mAdapter = new ArchiveRecyclerAdapter(getContext(), currentShows);
         mRecycler.setAdapter(mAdapter);
 
         mAdapter.notifyDataSetChanged();
 
-        Date d = new Date();
+
+
 
         tabs.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
                         mAdapter.clear();
-                        dayOfTheWeekData.add(dayOfTheWeekData.get(tab.getPosition()));
+                        currentShows.addAll(archiveData.get(tab.getPosition()));
                         mAdapter.notifyDataSetChanged();
                     }
 
@@ -78,10 +98,18 @@ public class ScheduleFragment extends Fragment {
         );
 
         //Refreshes data
-        new FetchData().execute();
+        new FetchData(this).execute();
 
         return self;
     }
+
+    public void updateArchiveData(ArrayList<LinkedList<Show>> result){
+        archiveData.clear();
+        archiveData.addAll(result);
+        mAdapter.notifyDataSetChanged();
+        //set first load
+    }
+
 
 
 
