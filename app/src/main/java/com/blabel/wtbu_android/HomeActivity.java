@@ -1,18 +1,31 @@
 package com.blabel.wtbu_android;
 
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.blabel.wtbu_android.ui.streaming.ScheduleFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
+import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.ExtractorMediaSource;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
+import com.google.android.exoplayer2.ui.PlayerView;
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
@@ -33,6 +46,17 @@ public class HomeActivity extends AppCompatActivity {
 
     private boolean darkThemeEnabled;
 
+    private PlayerView playerView;
+    private SimpleExoPlayer player;
+    private boolean playWhenReady = true;
+    private int currentWindow = 0;
+    private long playbackPosition = 0;
+
+    private String audioUrl;
+
+    private CardView playerCard;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         //Dark Theme
@@ -40,6 +64,8 @@ public class HomeActivity extends AppCompatActivity {
         darkThemeEnabled = preferences.getBoolean(PREF_DARK_THEME, false);
 
         Log.d("WTBU-A", "Dark theme enabled: " + ((Boolean) darkThemeEnabled).toString());
+
+        audioUrl = "";
 
         if(darkThemeEnabled){
             setTheme(R.style.AppThemeDark);
@@ -55,6 +81,14 @@ public class HomeActivity extends AppCompatActivity {
         viewPager.setAdapter(pagerAdapter);
 
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+
+        playerCard = findViewById(R.id.media_player_card);
+        playerCard.setVisibility(View.GONE);
+
+        //Set up media player in the card
+        playerView = findViewById(R.id.video_view);
+        playerView.setControllerShowTimeoutMs(0);
+
 
         //Linking the Bottom Navigation to the ViewPager
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -149,4 +183,86 @@ public class HomeActivity extends AppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    public void initializePlayer(String urlSource) {
+        player = ExoPlayerFactory.newSimpleInstance(
+                new DefaultRenderersFactory(this),
+                new DefaultTrackSelector(), new DefaultLoadControl());
+
+        playerView.setPlayer(player);
+
+        player.setPlayWhenReady(playWhenReady);
+        player.seekTo(currentWindow, playbackPosition);
+
+        Uri uri = Uri.parse(urlSource);
+        MediaSource mediaSource = buildMediaSource(uri);
+        player.prepare(mediaSource, true, false);
+    }
+
+    private MediaSource buildMediaSource(Uri uri) {
+        return new ExtractorMediaSource.Factory(
+                new DefaultHttpDataSourceFactory("WTBU-Android")).
+                createMediaSource(uri);
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (Util.SDK_INT > 23) {
+            initializePlayer(audioUrl);
+        }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //hideSystemUi();
+        if ((Util.SDK_INT <= 23 || player == null)) {
+            initializePlayer(audioUrl);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (Util.SDK_INT <= 23) {
+            releasePlayer();
+        }
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (Util.SDK_INT > 23) {
+            releasePlayer();
+        }
+    }
+
+    public void releasePlayer() {
+        if (player != null) {
+            playbackPosition = player.getCurrentPosition();
+            currentWindow = player.getCurrentWindowIndex();
+            playWhenReady = player.getPlayWhenReady();
+            player.release();
+            player = null;
+        }
+    }
+
+    public String getAudioUrl() {
+        return audioUrl;
+    }
+
+    public void setAudioUrl(String audioUrl) {
+        this.audioUrl = audioUrl;
+    }
+
+    public void showCard(){
+        playerCard.setVisibility(View.VISIBLE);
+    }
+
+    public void hideCard(){
+        playerCard.setVisibility(View.GONE);
+    }
+
+
 }
