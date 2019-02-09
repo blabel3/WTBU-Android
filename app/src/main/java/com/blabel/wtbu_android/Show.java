@@ -1,8 +1,5 @@
 package com.blabel.wtbu_android;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 public class Show implements Comparable<Show> {
 
     private String name;
