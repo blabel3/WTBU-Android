@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import com.blabel.wtbu_android.ArchiveRecyclerAdapter;
 import com.blabel.wtbu_android.FetchData;
+import com.blabel.wtbu_android.HomeActivity;
 import com.blabel.wtbu_android.R;
 import com.blabel.wtbu_android.Show;
 import com.google.android.material.tabs.TabLayout;
@@ -77,7 +78,7 @@ public class ScheduleFragment extends Fragment {
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(mLayoutManager);
 
-        mAdapter = new ArchiveRecyclerAdapter(getContext(), currentShows);
+        mAdapter = new ArchiveRecyclerAdapter((HomeActivity)getActivity(), currentShows);
         mRecycler.setAdapter(mAdapter);
 
 
