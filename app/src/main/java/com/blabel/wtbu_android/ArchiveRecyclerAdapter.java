@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecyclerAdapter.MyViewHolder>{
     private LinkedList<Show> mDataset;
-    private Context mContext;
+    private HomeActivity mActivity;
 
     private SimpleExoPlayer archivePlayer;
     private boolean playWhenReady = true;
@@ -42,12 +42,6 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
         public ImageButton oneWeek;
         public ImageButton twoWeeks;
 
-        public ImageButton control;
-        public SeekBar elapsedTime;
-
-        public PlayerView playerViewEarly;
-        public PlayerView playerViewLate;
-
         public MyViewHolder(View view){
             super(view);
 
@@ -59,23 +53,14 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
             oneWeek = view.findViewById(R.id.archive_recent_button);
             twoWeeks = view.findViewById(R.id.archive_later_button);
 
-            control = view.findViewById(R.id.card_control_button);
-            elapsedTime = view.findViewById(R.id.card_seek_bar);
-
-            playerViewEarly = view.findViewById(R.id.video_early_view);
-            playerViewLate = view.findViewById(R.id.video_late_view);
-
-            playerViewEarly.setControllerShowTimeoutMs(0);
-            playerViewLate.setControllerShowTimeoutMs(0);
-
         }
 
     }
 
     // Provide a suitable constructor (depends on the kind of dataset)
-    public ArchiveRecyclerAdapter(Context fragmentDad, LinkedList<Show> myDataset) {
+    public ArchiveRecyclerAdapter(HomeActivity fragmentDad, LinkedList<Show> myDataset) {
         mDataset = myDataset;
-        mContext = fragmentDad;
+        mActivity = fragmentDad;
     }
 
     // Create new views (invoked by the layout manager)
@@ -103,9 +88,11 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
             holder.oneWeek.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    view.setVisibility(View.INVISIBLE);
-                    initializePlayer(holder.playerViewEarly, show.getUrl1());
-                    holder.playerViewEarly.setVisibility(View.VISIBLE);
+                    mActivity.showCard();
+
+                    mActivity.setAudioUrl(show.getUrl1());
+                    mActivity.releasePlayer();
+                    mActivity.initializePlayer(show.getUrl1());
                 }
             });
         } else {
@@ -116,36 +103,18 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
             holder.twoWeeks.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    view.setVisibility(View.INVISIBLE);
-                    initializePlayer(holder.playerViewLate, show.getUrl2());
-                    holder.playerViewLate.setVisibility(View.VISIBLE);
+                    mActivity.showCard();
+
+                    mActivity.setAudioUrl(show.getUrl2());
+                    mActivity.releasePlayer();
+                    mActivity.initializePlayer(show.getUrl2());
+
                 }
             });
         } else {
             holder.twoWeeks.setVisibility(View.GONE);
         }
 
-    }
-
-    private void initializePlayer(PlayerView playerView, String link) {
-        archivePlayer = ExoPlayerFactory.newSimpleInstance(
-                new DefaultRenderersFactory(mContext),
-                new DefaultTrackSelector(), new DefaultLoadControl());
-
-        playerView.setPlayer(archivePlayer);
-
-        archivePlayer.setPlayWhenReady(playWhenReady);
-        archivePlayer.seekTo(0, 0);
-
-        Uri uri = Uri.parse(link);
-        MediaSource mediaSource = buildMediaSource(uri);
-        archivePlayer.prepare(mediaSource, true, false);
-    }
-
-    private MediaSource buildMediaSource(Uri uri) {
-        return new ExtractorMediaSource.Factory(
-                new DefaultHttpDataSourceFactory("WTBU-Android")).
-                createMediaSource(uri);
     }
 
     // Return the size of your dataset (invoked by the layout manager)

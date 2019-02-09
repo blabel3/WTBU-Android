@@ -5,9 +5,9 @@ import android.os.Parcelable;
 
 public class Show implements Comparable<Show> {
 
-    String name;
-    String url1;
-    String url2;
+    private String name;
+    private String url1;
+    private String url2;
     //djs?
     //custom show color?
     //custom show image link?

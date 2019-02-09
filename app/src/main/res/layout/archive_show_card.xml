@@ -67,59 +67,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_looks_two_black_24dp" />
 
-        <ImageButton
-            android:id="@+id/card_control_button"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="8dp"
-            android:background="@drawable/dark_circle"
-            android:contentDescription="@string/archive_control_desc"
-            android:tint="?attr/colorBackgroundFloating"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/card_show_name"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_play_arrow_black_24dp" />
-
-        <SeekBar
-            android:id="@+id/card_seek_bar"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:layout_marginBottom="8dp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/archive_later_button"
-            app:layout_constraintStart_toEndOf="@+id/card_control_button"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:id="@+id/video_late_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/archive_later_button"
-            app:layout_constraintEnd_toEndOf="@+id/archive_later_button"
-            app:layout_constraintStart_toStartOf="@+id/archive_later_button"
-            app:layout_constraintTop_toTopOf="@+id/archive_later_button" />
-
-        <com.google.android.exoplayer2.ui.PlayerView
-            android:id="@+id/video_early_view"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/archive_recent_button"
-            app:layout_constraintEnd_toEndOf="@+id/archive_recent_button"
-            app:layout_constraintStart_toStartOf="@+id/archive_recent_button"
-            app:layout_constraintTop_toTopOf="@+id/archive_recent_button" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.cardview.widget.CardView>
