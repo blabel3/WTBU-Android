@@ -36,6 +36,7 @@ public class ScheduleFragment extends Fragment {
 
     private static ArrayList<LinkedList<Show>> archiveData;
     private LinkedList<Show> currentShows;
+    private int dayOfWeek;
 
 
     public static ScheduleFragment newInstance() {
@@ -60,7 +61,9 @@ public class ScheduleFragment extends Fragment {
 
         Date d = new Date();
         Calendar c = new GregorianCalendar();
-        TabLayout.Tab currentDay = tabs.getTabAt(c.get(Calendar.DAY_OF_WEEK) - 1);
+        dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
+        TabLayout.Tab currentDay = tabs.getTabAt(dayOfWeek);
+        currentDay.select();
 
         currentShows = archiveData.get(c.get(Calendar.DAY_OF_WEEK) - 1);
 
@@ -107,6 +110,8 @@ public class ScheduleFragment extends Fragment {
     public void updateArchiveData(ArrayList<LinkedList<Show>> result){
         archiveData.clear();
         archiveData.addAll(result);
+        currentShows.clear();
+        currentShows.addAll(archiveData.get(dayOfWeek));
         mAdapter.notifyDataSetChanged();
         //set first load
     }
