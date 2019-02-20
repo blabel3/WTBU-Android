@@ -3,7 +3,7 @@ package com.blabel.wtbu_android;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.blabel.wtbu_android.ui.streaming.ScheduleFragment;
+import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,11 +18,11 @@ import java.util.List;
 
 public class FetchData extends AsyncTask<Void, Void, ArrayList<LinkedList<Show>>> {
 
-    private ScheduleFragment mScheduleFragment;
+    private ArchiveFragment mArchiveFragment;
     private static String url = "http://headphones.bu.edu/";
 
-    public FetchData(ScheduleFragment caller){
-        mScheduleFragment = caller;
+    public FetchData(ArchiveFragment caller){
+        mArchiveFragment = caller;
     }
 
     protected void onPreExcecute(){
@@ -101,7 +101,7 @@ public class FetchData extends AsyncTask<Void, Void, ArrayList<LinkedList<Show>>
 
     @Override
     protected void onPostExecute(ArrayList<LinkedList<Show>> archiveData) {
-        mScheduleFragment.updateArchiveData(archiveData);
+        mArchiveFragment.updateArchiveData(archiveData);
 
         Log.d("WTBU-A", "Success!");
 

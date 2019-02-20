@@ -7,8 +7,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
-import com.blabel.wtbu_android.ui.streaming.ScheduleFragment;
+import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -89,6 +90,12 @@ public class HomeActivity extends AppCompatActivity {
         playerView = findViewById(R.id.video_view);
         playerView.setControllerShowTimeoutMs(0);
 
+        ((Button)findViewById(R.id.dismiss_button)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                hideCard();
+            }
+        });
 
         //Linking the Bottom Navigation to the ViewPager
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -144,7 +151,7 @@ public class HomeActivity extends AppCompatActivity {
         public Fragment getItem(int position) {
             //return ArrayListFragment.newInstance(position);
             switch(position){
-                case 0: return ScheduleFragment.newInstance();
+                case 0: return ArchiveFragment.newInstance();
                 case 1: return StreamingFragment.newInstance();
                 default: return WTBUFragment.newInstance();
                 //default: Log.e("WTBU-A", "Pager out of bounds");
@@ -261,6 +268,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void hideCard(){
+        releasePlayer();
         playerCard.setVisibility(View.GONE);
     }
 
