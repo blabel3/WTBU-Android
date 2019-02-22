@@ -6,18 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.blabel.wtbu_android.ArchiveRecyclerAdapter;
-import com.blabel.wtbu_android.FetchData;
 import com.blabel.wtbu_android.HomeActivity;
 import com.blabel.wtbu_android.R;
 import com.blabel.wtbu_android.Show;
 import com.google.android.material.tabs.TabLayout;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.LinkedList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
