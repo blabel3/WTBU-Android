@@ -12,13 +12,10 @@ import android.widget.Button;
 import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
-import com.google.android.exoplayer2.DefaultLoadControl;
-import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
@@ -32,6 +29,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+
+//import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 
 public class HomeActivity extends AppCompatActivity {
 
@@ -52,6 +51,8 @@ public class HomeActivity extends AppCompatActivity {
     private boolean playWhenReady = true;
     private int currentWindow = 0;
     private long playbackPosition = 0;
+
+    //PlayerNotificationManager playerNotificationManager;
 
     private String audioUrl;
 
@@ -98,6 +99,8 @@ public class HomeActivity extends AppCompatActivity {
         });
 
         //hideCard();
+
+        //playerNotificationManager
 
         //Linking the Bottom Navigation to the ViewPager
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -194,9 +197,7 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     public void initializePlayer(String urlSource) {
-        player = ExoPlayerFactory.newSimpleInstance(
-                new DefaultRenderersFactory(this),
-                new DefaultTrackSelector(), new DefaultLoadControl());
+        player = ExoPlayerFactory.newSimpleInstance(this);
 
         playerView.setPlayer(player);
 
