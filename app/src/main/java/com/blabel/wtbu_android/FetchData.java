@@ -16,13 +16,13 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
-public class FetchData extends AsyncTask<Void, Void, ArrayList<LinkedList<Show>>> {
+public abstract class FetchData extends AsyncTask<Void, Void, ArrayList<LinkedList<Show>>> {
 
     private ArchiveFragment mArchiveFragment;
     private static String url = "http://headphones.bu.edu/";
 
-    public FetchData(ArchiveFragment caller){
-        mArchiveFragment = caller;
+    public FetchData(){
+
     }
 
     protected void onPreExcecute(){
@@ -96,14 +96,6 @@ public class FetchData extends AsyncTask<Void, Void, ArrayList<LinkedList<Show>>
         }
 
         return archiveData;
-
-    }
-
-    @Override
-    protected void onPostExecute(ArrayList<LinkedList<Show>> archiveData) {
-        mArchiveFragment.updateArchiveData(archiveData);
-
-        Log.d("WTBU-A", "Success!");
 
     }
 

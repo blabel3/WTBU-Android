@@ -17,30 +17,31 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.LinkedList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ScheduleFragment extends Fragment {
+public class ArchiveFragment extends Fragment {
 
-    private ScheduleViewModel mViewModel;
+    private ArchiveViewModel model;
 
     private RecyclerView mRecycler;
     private ArchiveRecyclerAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
 
-
-    private static ArrayList<LinkedList<Show>> archiveData;
     private LinkedList<Show> currentShows;
-    private int dayOfWeek;
+
+    private TabLayout tabs;
 
 
-    public static ScheduleFragment newInstance() {
-        return new ScheduleFragment();
+    public static ArchiveFragment newInstance() {
+        return new ArchiveFragment();
     }
 
     @Override
@@ -48,50 +49,30 @@ public class ScheduleFragment extends Fragment {
                              @Nullable Bundle savedInstanceState) {
         View self = inflater.inflate(R.layout.schedule_fragment, container, false);
 
-        archiveData = new ArrayList<>(7);
-        archiveData.add(new LinkedList<Show>());
-        archiveData.add(new LinkedList<Show>());
-        archiveData.add(new LinkedList<Show>());
-        archiveData.add(new LinkedList<Show>());
-        archiveData.add(new LinkedList<Show>());
-        archiveData.add(new LinkedList<Show>());
-        archiveData.add(new LinkedList<Show>());
+        tabs = (TabLayout) self.findViewById(R.id.tabs);
 
-        TabLayout tabs = (TabLayout) self.findViewById(R.id.tabs);
-
-        Date d = new Date();
-        Calendar c = new GregorianCalendar();
-        dayOfWeek = c.get(Calendar.DAY_OF_WEEK) - 1;
-        TabLayout.Tab currentDay = tabs.getTabAt(dayOfWeek);
-        currentDay.select();
-
-        currentShows = archiveData.get(c.get(Calendar.DAY_OF_WEEK) - 1);
-
-        mRecycler = (RecyclerView) self.findViewById(R.id.archive_recycler);
-
+        mRecycler = self.findViewById(R.id.archive_recycler);
         mRecycler.setHasFixedSize(true);
 
         mLayoutManager = new LinearLayoutManager(getContext());
         mRecycler.setLayoutManager(mLayoutManager);
 
+        currentShows = new LinkedList<>();
         mAdapter = new ArchiveRecyclerAdapter((HomeActivity)getActivity(), currentShows);
         mRecycler.setAdapter(mAdapter);
-
 
         tabs.addOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
-                        mAdapter.clear();
-                        currentShows.addAll(archiveData.get(tab.getPosition()));
-                        mAdapter.notifyDataSetChanged();
+                        model.getShows().changeDay(tab.getPosition());
                     }
 
         //Refreshes data */
 
                     @Override
                     public void onTabReselected(TabLayout.Tab tab) {
-
+                        //model.getShows().loadShows();
                     }
 
                     @Override
@@ -101,26 +82,26 @@ public class ScheduleFragment extends Fragment {
                 }
         );
 
-        //Refreshes data
-        new FetchData(this).execute();
-
         return self;
-    }
-
-    public void updateArchiveData(ArrayList<LinkedList<Show>> result){
-        archiveData.clear();
-        archiveData.addAll(result);
-        currentShows.clear();
-        currentShows.addAll(archiveData.get(dayOfWeek));
-        mAdapter.notifyDataSetChanged();
-        //set first load
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(ScheduleViewModel.class);
+        model = ViewModelProviders.of(this).get(ArchiveViewModel.class);
         // TODO: Use the ViewModel
+
+        model.getShows().observe(this, new Observer<LinkedList<Show>>() {
+            @Override
+            public void onChanged(LinkedList<Show> shows) {
+                //update UI with new shows.
+                tabs.getTabAt(model.getShows().dataDay()).select();
+                mAdapter.clear();
+                currentShows.clear();
+                currentShows.addAll(shows);
+                mAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
 }

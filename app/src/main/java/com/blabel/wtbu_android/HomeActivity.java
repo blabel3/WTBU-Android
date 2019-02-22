@@ -97,6 +97,8 @@ public class HomeActivity extends AppCompatActivity {
             }
         });
 
+        //hideCard();
+
         //Linking the Bottom Navigation to the ViewPager
         bottomNavigationView.setOnNavigationItemSelectedListener(
                 new BottomNavigationView.OnNavigationItemSelectedListener() {
