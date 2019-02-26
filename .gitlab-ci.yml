@@ -41,7 +41,6 @@ building:
 testing:
   stage: test
   script: 
-    - echo 'test'
-    ## - ./gradlew -Pci --console=plain :app:testDebug
+    - ./gradlew -Pci --console=plain :app:testDebug
 
 
