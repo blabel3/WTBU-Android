@@ -58,14 +58,13 @@ releasing:
     paths:
       - wtbu-android-release.apk
   after_script:
-    - version=$(git describe --abbrev=0)
-    - echo $version
+    - echo $(git describe --abbrev=0)
     - echo $ACCESS_TOKEN
     - echo $CI_JOB_ID
     - >- 
       curl
       --header 'Content-Type: application/json'
       --header "PRIVATE-TOKEN: $ACCESS_TOKEN"
-      --data '{ "name": "$version", "tag_name": "$version", "description": "Test", "assets": { "links": [{ "name": "App APK", "url": "https://gitlab.com/blabel3/wtbu-android/-/jobs/artifacts/$CI_JOB_ID/raw/wtbu-android-release.apk?job=releasing" }] } }'
+      --data '{ "name": "$(git describe --abbrev=0)", "tag_name": "$(git describe --abbrev=0)", "description": "Test", "assets": { "links": [{ "name": "App APK", "url": "https://gitlab.com/blabel3/wtbu-android/-/jobs/artifacts/$CI_JOB_ID/raw/wtbu-android-release.apk?job=releasing" }] } }'
       --request POST https://gitlab.com/api/v4/projects/10662136/releases/
 
