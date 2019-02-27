@@ -45,7 +45,8 @@ testing:
 
 releasing:
   stage: deploy
-  only: tags
+  only: 
+    - tags
   before_script: 
     - ./gradlew assemble
   script: 
