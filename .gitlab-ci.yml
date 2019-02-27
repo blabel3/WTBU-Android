@@ -60,6 +60,7 @@ releasing:
   after_script:
     - echo $ACCESS_TOKEN
     - echo $CI_JOB_ID
+    - echo $CI_COMMIT_TAG
     - >- 
       curl
       --header 'Content-Type: application/json'
