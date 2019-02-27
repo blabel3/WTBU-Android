@@ -43,4 +43,24 @@ testing:
   script: 
     - ./gradlew -Pci --console=plain :app:testDebug
 
+releasing:
+  stage: deploy
+  only: tags
+  before_script: 
+    - ./gradlew assemble
+  script: 
+    - echo $KEYSTORE_FILE | base64 -d > my-release-key.jks
+    - zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+    - apksigner sign --ks my-release-key.jks --out wtbu-android-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+    - apksigner verify wtbu-android-release.apk
+  artifacts:
+    paths:
+      - wtbu-android-release.apk
+  after_script:
+    - version=$(git describe --abbrev=0)
+    - curl --header 'Content-Type: application/json' --header "PRIVATE-TOKEN: $ACCESS_TOKEN" \
+     --data '{ "name": "$version", "tag_name": "$version", "description": "Test", "assets": { "links": [{ "name": "App APK", "url": "gitlab.com/blabel3/wtbu-android/-/jobs/artifacts/$CI_JOB_ID/raw/wtbu-android-release.apk?job=releasing" }] } }' \
+     --request POST https://gitlab.com/blabel3/wtbu-android/releases
+
+
 
