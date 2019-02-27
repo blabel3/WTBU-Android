@@ -16,4 +16,6 @@
     <string name="older_week_label">Episode from two weeks ago</string>
     <string name="show_name_textview">Show Name</string>
     <string name="archive_control_desc">Archive Play/Pause</string>
+    <string name="notification_title">WTBU Android</string>
+    <string name="stream_button_description">Listen to the Live Stream</string>
 </resources>
