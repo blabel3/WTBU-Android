@@ -1,8 +1,15 @@
 package com.blabel.wtbu_android;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,13 +19,7 @@ import android.widget.Button;
 import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -46,17 +47,8 @@ public class HomeActivity extends AppCompatActivity {
 
     private boolean darkThemeEnabled;
 
-    private PlayerView playerView;
-    private SimpleExoPlayer player;
-    private boolean playWhenReady = true;
-    private int currentWindow = 0;
-    private long playbackPosition = 0;
-
-    //PlayerNotificationManager playerNotificationManager;
-
-    private String audioUrl;
-
     private CardView playerCard;
+    private PlayerView playerView;
 
 
     @Override
@@ -67,8 +59,6 @@ public class HomeActivity extends AppCompatActivity {
 
         Log.d("WTBU-A", "Dark theme enabled: " + ((Boolean) darkThemeEnabled).toString());
 
-        audioUrl = "";
-
         if(darkThemeEnabled){
             setTheme(R.style.AppThemeDark);
         }
@@ -76,6 +66,8 @@ public class HomeActivity extends AppCompatActivity {
         //Create activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+
+        createNotificationChannel();
 
         pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
 
@@ -97,10 +89,6 @@ public class HomeActivity extends AppCompatActivity {
                 hideCard();
             }
         });
-
-        //hideCard();
-
-        //playerNotificationManager
 
         //Linking the Bottom Navigation to the ViewPager
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -139,6 +127,8 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        doBindService();
 
     }
 
@@ -196,26 +186,62 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void initializePlayer(String urlSource) {
-        player = ExoPlayerFactory.newSimpleInstance(this);
+    // Don't attempt to unbind from the service unless the client has received some
+    // information about the service's state.
+    private boolean mShouldUnbind;
 
-        playerView.setPlayer(player);
+    // To invoke the bound service, first make sure that this value
+    // is not null.
+    private PlayerService mBoundService;
 
-        player.setPlayWhenReady(playWhenReady);
-        player.seekTo(currentWindow, playbackPosition);
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  Because we have bound to a explicit
+            // service that we know is running in our own process, we can
+            // cast its IBinder to a concrete class and directly access it.
+            mBoundService = ((PlayerService.LocalBinder)service).getService();
 
-        Uri uri = Uri.parse(urlSource);
-        MediaSource mediaSource = buildMediaSource(uri);
-        player.prepare(mediaSource, true, false);
+            // Tell the user about this for our demo.
+            Log.v("WTBU-A", "Service connected to activity");
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            // Because it is running in our same process, we should never
+            // see this happen.
+            mBoundService = null;
+            Log.v("WTBU-A", "AAAAAA SERVICE COME BACK");
+        }
+    };
+
+    void doBindService() {
+        // Attempts to establish a connection with the service.  We use an
+        // explicit class name because we want a specific service
+        // implementation that we know will be running in our own process
+        // (and thus won't be supporting component replacement by other
+        // applications).
+        if (bindService(new Intent(HomeActivity.this, PlayerService.class),
+                mConnection, Context.BIND_AUTO_CREATE)) {
+            mShouldUnbind = true;
+        } else {
+            Log.e("WTBU-A", "Error: The requested service doesn't " +
+                    "exist, or this client isn't allowed access to it.");
+        }
     }
 
-    private MediaSource buildMediaSource(Uri uri) {
-        return new ExtractorMediaSource.Factory(
-                new DefaultHttpDataSourceFactory("WTBU-Android")).
-                createMediaSource(uri);
+    void doUnbindService() {
+        if (mShouldUnbind) {
+            // Release information about the service's state.
+            unbindService(mConnection);
+            mShouldUnbind = false;
+        }
     }
 
-    @Override
+
+    /*@Override
     public void onStart() {
         super.onStart();
         if (Util.SDK_INT > 23) {
@@ -246,34 +272,31 @@ public class HomeActivity extends AppCompatActivity {
         if (Util.SDK_INT > 23) {
             releasePlayer();
         }
-    }
-
-    public void releasePlayer() {
-        if (player != null) {
-            playbackPosition = player.getCurrentPosition();
-            currentWindow = player.getCurrentWindowIndex();
-            playWhenReady = player.getPlayWhenReady();
-            player.release();
-            player = null;
-        }
-    }
-
-    public String getAudioUrl() {
-        return audioUrl;
-    }
-
-    public void setAudioUrl(String audioUrl) {
-        this.audioUrl = audioUrl;
-    }
+    }*/
 
     public void showCard(){
         playerCard.setVisibility(View.VISIBLE);
     }
 
     public void hideCard(){
-        releasePlayer();
+        //unbindService(//TODO);
         playerCard.setVisibility(View.GONE);
     }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(PlayerService.getChannelID(), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
 }

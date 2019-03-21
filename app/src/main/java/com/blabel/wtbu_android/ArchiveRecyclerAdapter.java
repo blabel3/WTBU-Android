@@ -1,5 +1,7 @@
 package com.blabel.wtbu_android;
 
+import android.content.Intent;
+import android.os.Build;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,9 +79,13 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
                 public void onClick(View view) {
                     mActivity.showCard();
 
-                    mActivity.setAudioUrl(show.getUrl1());
-                    mActivity.releasePlayer();
-                    mActivity.initializePlayer(show.getUrl1());
+                    Intent playerIntent = new Intent(mActivity, PlayerService.class);
+                    playerIntent.putExtra("audioURL", show.getUrl1());
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mActivity.startForegroundService(playerIntent);
+                    } else {
+                        mActivity.startService(playerIntent);
+                    }
                 }
             });
         } else {
@@ -92,9 +98,13 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
                 public void onClick(View view) {
                     mActivity.showCard();
 
-                    mActivity.setAudioUrl(show.getUrl2());
-                    mActivity.releasePlayer();
-                    mActivity.initializePlayer(show.getUrl2());
+                    Intent playerIntent = new Intent(mActivity, PlayerService.class);
+                    playerIntent.putExtra("audioURL", show.getUrl2());
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mActivity.startForegroundService(playerIntent);
+                    } else {
+                        mActivity.startService(playerIntent);
+                    }
 
                 }
             });

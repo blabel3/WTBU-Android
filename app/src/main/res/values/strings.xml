@@ -18,4 +18,8 @@
     <string name="archive_control_desc">Archive Play/Pause</string>
     <string name="notification_title">WTBU Android</string>
     <string name="stream_button_description">Listen to the Live Stream</string>
+    <!-- Notification -->
+    <string name="channel_name">Music Player</string>
+    <string name="channel_description">The music player that runs while audio streams in the background.</string>
+    <string name="service_started">SERVICE STARTED</string>
 </resources>
