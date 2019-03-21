@@ -1,15 +1,11 @@
 package com.blabel.wtbu_android.ui.streaming;
 
-import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.blabel.wtbu_android.HomeActivity;
-import com.blabel.wtbu_android.PlayerService;
 import com.blabel.wtbu_android.R;
 
 import androidx.annotation.NonNull;
@@ -45,15 +41,7 @@ public class StreamingFragment extends Fragment {
 
                 act.showCard();
 
-                String audioUrl = "http://wtbu.bu.edu:1800/";
-                Intent playerIntent = new Intent(act, PlayerService.class);
-                playerIntent.putExtra("audioURL", "http://wtbu.bu.edu:1800/");
-                Log.v("WTBU-A", "Trying to start service");
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                    act.startService(playerIntent);
-                } else {
-                    act.startService(playerIntent);
-                }
+                act.startMedia("http://wtbu.bu.edu:1800/");
             }
         });
 

@@ -1,6 +1,7 @@
 package com.blabel.wtbu_android;
 
-import android.app.IntentService;
+import android.app.Notification;
+import android.app.Service;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Binder;
@@ -14,9 +15,7 @@ import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
-import androidx.annotation.Nullable;
-
-public class PlayerService extends IntentService {
+public class PlayerService extends Service {
     private PlayerNotificationManager playerNotificationManager;
 
     // Unique Identification Number for the Notification.
@@ -40,37 +39,46 @@ public class PlayerService extends IntentService {
         }
     }
 
-    public PlayerService(){
-        super("WTBU Media Player");
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent) {
-        releasePlayer();
-        String url = intent.getExtras().getString("audioURL");
-        Log.v("WTBU-A", "Intent Sent " + url);
-        initializePlayer(url);
-
-    }
-
     @Override
     public void onCreate() {
         Log.v("WTBU-A", "Service created");
 
         playerNotificationManager = new PlayerNotificationManager(
-                getApplicationContext(),
+                this,
                 CHANNEL_ID,
                 NOTIFICATION_ID,
                 new DescriptionAdapter());
 
-        playerNotificationManager.setStopAction(null);
+        playerNotificationManager.setNotificationListener(new PlayerNotificationManager.NotificationListener() {
+            @Override
+            public void onNotificationStarted(int notificationId, Notification notification) {
+                startForeground(notificationId, notification);
+            }
+
+            @Override
+            public void onNotificationCancelled(int notificationId) {
+                stopSelf();
+            }
+        });
+
+        //playerNotificationManager.setStopAction(null);
         super.onCreate();
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        releasePlayer();
+        String url = intent.getExtras().getString("audioURL");
+        Log.v("WTBU-A", "Intent Sent " + url);
+        initializePlayer(url);
+        playerNotificationManager.setPlayer(player);
+        return START_STICKY;
     }
 
     @Override
     public void onDestroy() {
         // Cancel the persistent notification.
-        playerNotificationManager.setPlayer(null);
+        releasePlayer();
 
         super.onDestroy();
     }
@@ -89,7 +97,7 @@ public class PlayerService extends IntentService {
     }
 
     public void initializePlayer(String audioUrl) {
-        player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
+        player = ExoPlayerFactory.newSimpleInstance(this);
         //playerNotificationManager.setPlayer(player);
 
         player.setPlayWhenReady(playWhenReady);
