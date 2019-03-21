@@ -43,28 +43,28 @@ testing:
   script: 
     - ./gradlew -Pci --console=plain :app:testDebug
 
-releasing:
-  stage: deploy
-  only: 
-    - tags
-  before_script: 
-    - ./gradlew assemble
-  script: 
-    - echo $KEYSTORE_FILE | base64 -d > my-release-key.jks
-    - zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
-    - apksigner sign --ks my-release-key.jks --out wtbu-android-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
-    - apksigner verify wtbu-android-release.apk
-  artifacts:
-    paths:
-      - wtbu-android-release.apk
-  after_script:
-    - echo $ACCESS_TOKEN
-    - echo $CI_JOB_ID
-    - echo $CI_COMMIT_TAG
-    - >- 
-      curl
-      --header 'Content-Type: application/json'
-      --header "PRIVATE-TOKEN: $ACCESS_TOKEN"
-      --data '{ "name": "${CI_COMMIT_TAG}", "tag_name": "${CI_COMMIT_TAG}", "ref": "${CI_COMMIT_TAG}", "description": "Test", "assets": { "links": [{ "name": "App APK", "url": "https://gitlab.com/blabel3/wtbu-android/-/jobs/artifacts/${CI_JOB_ID}/raw/wtbu-android-release.apk?job=releasing" }] } }'
-      --request POST https://gitlab.com/api/v4/projects/10662136/releases/
+#releasing:
+#  stage: deploy
+#  only: 
+#    - tags
+#  before_script: 
+#    - ./gradlew assemble
+#  script: 
+#    - echo $KEYSTORE_FILE | base64 -d > my-release-key.jks
+#    - zipalign -v -p 4 app/build/outputs/apk/release/app-release-unsigned.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+#    - apksigner sign --ks my-release-key.jks --out wtbu-android-release.apk app/build/outputs/apk/release/app-release-unsigned-aligned.apk
+#    - apksigner verify wtbu-android-release.apk
+#  artifacts:
+#    paths:
+#      - wtbu-android-release.apk
+#  after_script:
+#    - echo $ACCESS_TOKEN
+#    - echo $CI_JOB_ID
+#    - echo $CI_COMMIT_TAG
+#    - >- 
+#      curl
+#      --header 'Content-Type: application/json'
+#      --header "PRIVATE-TOKEN: $ACCESS_TOKEN"
+#      --data '{ "name": "${CI_COMMIT_TAG}", "tag_name": "${CI_COMMIT_TAG}", "ref": "${CI_COMMIT_TAG}", "description": "Test", "assets": { "links": [{ "name": "App APK", "url": "https://gitlab.com/blabel3/wtbu-android/-/jobs/artifacts/${CI_JOB_ID}/raw/wtbu-android-release.apk?job=releasing" }] } }'
+#      --request POST https://gitlab.com/api/v4/projects/10662136/releases/
 
