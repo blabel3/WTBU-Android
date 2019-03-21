@@ -11,13 +11,14 @@ import androidx.annotation.Nullable;
 public class DescriptionAdapter implements PlayerNotificationManager.MediaDescriptionAdapter{
     @Override
     public String getCurrentContentTitle(Player player) {
-        return "Title xd";
+        return "WTBU Radio";
     }
 
     @Nullable
     @Override
     public String getCurrentContentText(Player player) {
-        return "content text xd";
+        return "Fresh jams from your BU friends " +
+                "\uD83D\uDE04";
     }
 
     @Nullable
