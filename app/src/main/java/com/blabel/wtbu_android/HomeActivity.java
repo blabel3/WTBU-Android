@@ -18,7 +18,6 @@ import android.widget.Button;
 import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
-import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -48,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     private boolean darkThemeEnabled;
 
     private CardView playerCard;
-    private PlayerView playerView;
+    public static PlayerView playerView;
 
     private PlayerService mService;
     private boolean mBound = false;
@@ -216,7 +215,7 @@ public class HomeActivity extends AppCompatActivity {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
             mService = binder.getService();
-            showCard(mService.getPlayer());
+            showCard();
             mBound = true;
         }
 
@@ -227,8 +226,7 @@ public class HomeActivity extends AppCompatActivity {
         }
     };
 
-    public void showCard(SimpleExoPlayer player){
-        playerView.setPlayer(player);
+    public void showCard(){
         playerCard.setVisibility(View.VISIBLE);
         Log.v("WTBU-A", "Showing controls??");
     }

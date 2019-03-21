@@ -28,6 +28,8 @@ public class PlayerService extends Service {
     private int currentWindow = 0;
     private long playbackPosition = 0;
 
+    private String audioURL;
+
     /**
      * Class for clients to access.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with
@@ -69,7 +71,8 @@ public class PlayerService extends Service {
         releasePlayer();
         String url = intent.getExtras().getString("audioURL");
         Log.v("WTBU-A", "Intent Sent " + url);
-        initializePlayer(url);
+        audioURL = url;
+        initializePlayer();
         playerNotificationManager.setPlayer(player);
         return START_STICKY;
     }
@@ -95,14 +98,16 @@ public class PlayerService extends Service {
         return CHANNEL_ID;
     }
 
-    public void initializePlayer(String audioUrl) {
+    public void initializePlayer() {
         player = ExoPlayerFactory.newSimpleInstance(this);
         //playerNotificationManager.setPlayer(player);
+
+        HomeActivity.playerView.setPlayer(player);
 
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
 
-        Uri uri = Uri.parse(audioUrl);
+        Uri uri = Uri.parse(audioURL);
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource, true, false);
     }
@@ -124,7 +129,4 @@ public class PlayerService extends Service {
         }
     }
 
-    public SimpleExoPlayer getPlayer() {
-        return player;
-    }
 }
