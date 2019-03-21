@@ -39,11 +39,7 @@ public class StreamingFragment extends Fragment {
 
                 HomeActivity act = (HomeActivity) getActivity();
 
-                act.showCard();
-
-                act.setAudioUrl("http://wtbu.bu.edu:1800/");
-                act.releasePlayer();
-                act.initializePlayer("http://wtbu.bu.edu:1800/");
+                act.startMedia("http://wtbu.bu.edu:1800/");
             }
         });
 

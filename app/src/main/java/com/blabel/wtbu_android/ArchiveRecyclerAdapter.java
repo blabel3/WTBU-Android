@@ -75,11 +75,7 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
             holder.oneWeek.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mActivity.showCard();
-
-                    mActivity.setAudioUrl(show.getUrl1());
-                    mActivity.releasePlayer();
-                    mActivity.initializePlayer(show.getUrl1());
+                    mActivity.startMedia(show.getUrl1());
                 }
             });
         } else {
@@ -90,11 +86,7 @@ public class ArchiveRecyclerAdapter extends RecyclerView.Adapter<ArchiveRecycler
             holder.twoWeeks.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    mActivity.showCard();
-
-                    mActivity.setAudioUrl(show.getUrl2());
-                    mActivity.releasePlayer();
-                    mActivity.initializePlayer(show.getUrl2());
+                    mActivity.startMedia(show.getUrl2());
 
                 }
             });

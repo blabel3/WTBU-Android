@@ -1,8 +1,14 @@
 package com.blabel.wtbu_android;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
-import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,13 +18,7 @@ import android.widget.Button;
 import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
-import com.google.android.exoplayer2.ExoPlayerFactory;
-import com.google.android.exoplayer2.SimpleExoPlayer;
-import com.google.android.exoplayer2.source.ExtractorMediaSource;
-import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerView;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
-import com.google.android.exoplayer2.util.Util;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -46,18 +46,11 @@ public class HomeActivity extends AppCompatActivity {
 
     private boolean darkThemeEnabled;
 
-    private PlayerView playerView;
-    private SimpleExoPlayer player;
-    private boolean playWhenReady = true;
-    private int currentWindow = 0;
-    private long playbackPosition = 0;
-
-    //PlayerNotificationManager playerNotificationManager;
-
-    private String audioUrl;
-
     private CardView playerCard;
+    public PlayerView playerView;
 
+    private PlayerService mService;
+    private boolean mBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,8 +60,6 @@ public class HomeActivity extends AppCompatActivity {
 
         Log.d("WTBU-A", "Dark theme enabled: " + ((Boolean) darkThemeEnabled).toString());
 
-        audioUrl = "";
-
         if(darkThemeEnabled){
             setTheme(R.style.AppThemeDark);
         }
@@ -76,6 +67,8 @@ public class HomeActivity extends AppCompatActivity {
         //Create activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
+
+        createNotificationChannel();
 
         pagerAdapter = new MyPagerAdapter(getSupportFragmentManager());
 
@@ -97,10 +90,6 @@ public class HomeActivity extends AppCompatActivity {
                 hideCard();
             }
         });
-
-        //hideCard();
-
-        //playerNotificationManager
 
         //Linking the Bottom Navigation to the ViewPager
         bottomNavigationView.setOnNavigationItemSelectedListener(
@@ -165,6 +154,16 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        if(mBound) {
+            unbindService(serviceConnection);
+        }
+        mBound = false;
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
@@ -196,84 +195,67 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
-    public void initializePlayer(String urlSource) {
-        player = ExoPlayerFactory.newSimpleInstance(this);
-
-        playerView.setPlayer(player);
-
-        player.setPlayWhenReady(playWhenReady);
-        player.seekTo(currentWindow, playbackPosition);
-
-        Uri uri = Uri.parse(urlSource);
-        MediaSource mediaSource = buildMediaSource(uri);
-        player.prepare(mediaSource, true, false);
-    }
-
-    private MediaSource buildMediaSource(Uri uri) {
-        return new ExtractorMediaSource.Factory(
-                new DefaultHttpDataSourceFactory("WTBU-Android")).
-                createMediaSource(uri);
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        if (Util.SDK_INT > 23) {
-            initializePlayer(audioUrl);
+    public void startMedia(String audioUrl){
+        //Create and start service
+        Intent playerIntent = new Intent(this, PlayerService.class);
+        playerIntent.putExtra("audioURL", audioUrl);
+        Log.v("WTBU-A", "Trying to start service");
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(playerIntent);
+        } else {
+            startService(playerIntent);
         }
+
+        //bind to service
+        Intent intent = new Intent(this, PlayerService.class);
+        bindService(intent, serviceConnection, 0);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        //hideSystemUi();
-        if ((Util.SDK_INT <= 23 || player == null)) {
-            initializePlayer(audioUrl);
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
+            mService = binder.getService();
+            mService.setPlayerView(playerView);
+            showCard();
+            mBound = true;
         }
-    }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBound = false;
+            hideCard();
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        if (Util.SDK_INT > 23) {
-            releasePlayer();
-        }
-    }
-
-    public void releasePlayer() {
-        if (player != null) {
-            playbackPosition = player.getCurrentPosition();
-            currentWindow = player.getCurrentWindowIndex();
-            playWhenReady = player.getPlayWhenReady();
-            player.release();
-            player = null;
-        }
-    }
-
-    public String getAudioUrl() {
-        return audioUrl;
-    }
-
-    public void setAudioUrl(String audioUrl) {
-        this.audioUrl = audioUrl;
-    }
+    };
 
     public void showCard(){
         playerCard.setVisibility(View.VISIBLE);
+        Log.v("WTBU-A", "Showing controls??");
     }
 
     public void hideCard(){
-        releasePlayer();
+        mService.releasePlayer();
+        if(mBound) {
+            unbindService(serviceConnection);
+        }
         playerCard.setVisibility(View.GONE);
     }
 
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = getString(R.string.channel_name);
+            String description = getString(R.string.channel_description);
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel(PlayerService.getChannelID(), name, importance);
+            channel.setDescription(description);
+            // Register the channel with the system; you can't change the importance
+            // or other notification behaviors after this
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(channel);
+        }
+    }
 
 }
