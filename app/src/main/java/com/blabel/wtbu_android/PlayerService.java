@@ -33,7 +33,7 @@ public class PlayerService extends Service {
      * runs in the same process as its clients, we don't need to deal with
      * IPC.
      */
-    public class LocalBinder extends Binder {
+    public class PlayerBinder extends Binder {
         PlayerService getService() {
             return PlayerService.this;
         }
@@ -61,7 +61,6 @@ public class PlayerService extends Service {
             }
         });
 
-        //playerNotificationManager.setStopAction(null);
         super.onCreate();
     }
 
@@ -90,7 +89,7 @@ public class PlayerService extends Service {
 
     // This is the object that receives interactions from clients.  See
     // RemoteService for a more complete example.
-    private final IBinder mBinder = new LocalBinder();
+    private final IBinder mBinder = new PlayerBinder();
 
     public static String getChannelID(){
         return CHANNEL_ID;
@@ -125,4 +124,7 @@ public class PlayerService extends Service {
         }
     }
 
+    public SimpleExoPlayer getPlayer() {
+        return player;
+    }
 }

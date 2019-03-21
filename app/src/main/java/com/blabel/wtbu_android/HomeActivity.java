@@ -2,10 +2,13 @@ package com.blabel.wtbu_android;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,6 +18,7 @@ import android.widget.Button;
 import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
+import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -46,6 +50,8 @@ public class HomeActivity extends AppCompatActivity {
     private CardView playerCard;
     private PlayerView playerView;
 
+    private PlayerService mService;
+    private boolean mBound = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,6 +155,14 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(serviceConnection);
+        mBound = false;
+    }
+
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.main_menu, menu);
         return true;
@@ -192,14 +206,36 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         //bind to service
+        Intent intent = new Intent(this, PlayerService.class);
+        bindService(intent, serviceConnection, 0);
     }
 
-    public void showCard(){
+    private ServiceConnection serviceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            // We've bound to LocalService, cast the IBinder and get LocalService instance
+            PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
+            mService = binder.getService();
+            showCard(mService.getPlayer());
+            mBound = true;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mBound = false;
+            hideCard();
+        }
+    };
+
+    public void showCard(SimpleExoPlayer player){
+        playerView.setPlayer(player);
         playerCard.setVisibility(View.VISIBLE);
+        Log.v("WTBU-A", "Showing controls??");
     }
 
     public void hideCard(){
-        //unbindService(//TODO);
+        mService.releasePlayer();
+        unbindService(serviceConnection);
         playerCard.setVisibility(View.GONE);
     }
 

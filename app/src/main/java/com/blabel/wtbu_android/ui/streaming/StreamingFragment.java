@@ -39,8 +39,6 @@ public class StreamingFragment extends Fragment {
 
                 HomeActivity act = (HomeActivity) getActivity();
 
-                act.showCard();
-
                 act.startMedia("http://wtbu.bu.edu:1800/");
             }
         });
