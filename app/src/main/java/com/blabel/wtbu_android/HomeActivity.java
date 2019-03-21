@@ -47,7 +47,7 @@ public class HomeActivity extends AppCompatActivity {
     private boolean darkThemeEnabled;
 
     private CardView playerCard;
-    public static PlayerView playerView;
+    public PlayerView playerView;
 
     private PlayerService mService;
     private boolean mBound = false;
@@ -156,7 +156,9 @@ public class HomeActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        unbindService(serviceConnection);
+        if(mBound) {
+            unbindService(serviceConnection);
+        }
         mBound = false;
     }
 
@@ -215,6 +217,7 @@ public class HomeActivity extends AppCompatActivity {
             // We've bound to LocalService, cast the IBinder and get LocalService instance
             PlayerService.PlayerBinder binder = (PlayerService.PlayerBinder) iBinder;
             mService = binder.getService();
+            mService.setPlayerView(playerView);
             showCard();
             mBound = true;
         }
@@ -233,7 +236,9 @@ public class HomeActivity extends AppCompatActivity {
 
     public void hideCard(){
         mService.releasePlayer();
-        unbindService(serviceConnection);
+        if(mBound) {
+            unbindService(serviceConnection);
+        }
         playerCard.setVisibility(View.GONE);
     }
 

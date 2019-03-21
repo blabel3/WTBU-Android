@@ -13,6 +13,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.ui.PlayerNotificationManager;
+import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 
 public class PlayerService extends Service {
@@ -27,6 +28,8 @@ public class PlayerService extends Service {
     private boolean playWhenReady = true;
     private int currentWindow = 0;
     private long playbackPosition = 0;
+
+    private PlayerView playerView;
 
     private String audioURL;
 
@@ -72,8 +75,9 @@ public class PlayerService extends Service {
         String url = intent.getExtras().getString("audioURL");
         Log.v("WTBU-A", "Intent Sent " + url);
         audioURL = url;
-        initializePlayer();
-        playerNotificationManager.setPlayer(player);
+        //We actually initilize the player back in the main activity this is binded to so it can
+        //update the UI.
+        //initializePlayer();
         return START_STICKY;
     }
 
@@ -100,9 +104,11 @@ public class PlayerService extends Service {
 
     public void initializePlayer() {
         player = ExoPlayerFactory.newSimpleInstance(this);
-        //playerNotificationManager.setPlayer(player);
+        playerNotificationManager.setPlayer(player);
 
-        HomeActivity.playerView.setPlayer(player);
+        if(playerView != null){
+            playerView.setPlayer(player);
+        }
 
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
@@ -129,4 +135,12 @@ public class PlayerService extends Service {
         }
     }
 
+    public SimpleExoPlayer getPlayer() {
+        return player;
+    }
+
+    public void setPlayerView(PlayerView playerView) {
+        this.playerView = playerView;
+        initializePlayer();
+    }
 }
