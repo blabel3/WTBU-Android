@@ -19,6 +19,8 @@ import android.widget.Button;
 import com.blabel.wtbu_android.ui.streaming.ArchiveFragment;
 import com.blabel.wtbu_android.ui.streaming.StreamingFragment;
 import com.blabel.wtbu_android.ui.streaming.WTBUFragment;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -33,7 +35,7 @@ import androidx.viewpager.widget.ViewPager;
 
 //import com.google.android.exoplayer2.ui.PlayerNotificationManager;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements PlayerCallbacks {
 
     private static final int NUM_PAGES = 3;
 
@@ -127,8 +129,6 @@ public class HomeActivity extends AppCompatActivity {
                     }
                 }
         );
-
-        doBindService();
 
     }
 
@@ -241,38 +241,22 @@ public class HomeActivity extends AppCompatActivity {
     }
 
 
-    /*@Override
+    @Override
     public void onStart() {
         super.onStart();
-        if (Util.SDK_INT > 23) {
-            initializePlayer(audioUrl);
-        }
+        doBindService();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        //hideSystemUi();
-        if ((Util.SDK_INT <= 23 || player == null)) {
-            initializePlayer(audioUrl);
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (Util.SDK_INT <= 23) {
-            releasePlayer();
-        }
-    }
-
-    @Override
-    public void onStop() {
+    protected void onStop() {
         super.onStop();
-        if (Util.SDK_INT > 23) {
-            releasePlayer();
+        // Unbind from service
+        if (mShouldUnbind) {
+            mBoundService.setCallbacks(null); // unregister
+            unbindService(mConnection);
+            mShouldUnbind = false;
         }
-    }*/
+    }
 
     public void showCard(){
         playerCard.setVisibility(View.VISIBLE);
@@ -299,4 +283,13 @@ public class HomeActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void makeControls(SimpleExoPlayer player) {
+        playerView.setPlayer(player);
+    }
+
+    @Override
+    public void makeNotification(PlayerNotificationManager playerNotificationManager, SimpleExoPlayer player) {
+        playerNotificationManager.setPlayer(player);
+    }
 }

@@ -29,6 +29,12 @@ public class PlayerService extends IntentService {
     private int currentWindow = 0;
     private long playbackPosition = 0;
 
+    private PlayerCallbacks playerCallbacks;
+
+    public void setCallbacks(PlayerCallbacks callbacks) {
+        playerCallbacks = callbacks;
+    }
+
     /**
      * Class for clients to access.  Because we know this service always
      * runs in the same process as its clients, we don't need to deal with
@@ -40,7 +46,7 @@ public class PlayerService extends IntentService {
         }
     }
 
-    public PlayerService(){
+    public PlayerService() {
         super("WTBU Media Player");
     }
 
@@ -69,8 +75,7 @@ public class PlayerService extends IntentService {
 
     @Override
     public void onDestroy() {
-        // Cancel the persistent notification.
-        playerNotificationManager.setPlayer(null);
+        releasePlayer();
 
         super.onDestroy();
     }
@@ -84,13 +89,15 @@ public class PlayerService extends IntentService {
     // RemoteService for a more complete example.
     private final IBinder mBinder = new LocalBinder();
 
-    public static String getChannelID(){
+    public static String getChannelID() {
         return CHANNEL_ID;
     }
 
     public void initializePlayer(String audioUrl) {
         player = ExoPlayerFactory.newSimpleInstance(getApplicationContext());
-        //playerNotificationManager.setPlayer(player);
+        if (playerCallbacks != null) {
+            playerCallbacks.makeNotification(playerNotificationManager, player);
+        }
 
         player.setPlayWhenReady(playWhenReady);
         player.seekTo(currentWindow, playbackPosition);
@@ -98,6 +105,10 @@ public class PlayerService extends IntentService {
         Uri uri = Uri.parse(audioUrl);
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource, true, false);
+        if (playerCallbacks != null) {
+            playerCallbacks.makeControls(player);
+        }
+
     }
 
     private MediaSource buildMediaSource(Uri uri) {
@@ -108,7 +119,9 @@ public class PlayerService extends IntentService {
 
     public void releasePlayer() {
         if (player != null) {
-            playerNotificationManager.setPlayer(null);
+            if (playerCallbacks != null) {
+                playerCallbacks.makeNotification(playerNotificationManager, null);
+            }
             playbackPosition = player.getCurrentPosition();
             currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
